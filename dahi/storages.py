@@ -16,6 +16,9 @@ class AbstractCollection(object):
     def update(self, criteria, object):
         raise NotImplemented
 
+    def count(self, criteria):
+        raise NotImplemented
+
     def remove(self, criteria):
         raise NotImplemented
 
@@ -53,6 +56,10 @@ class Collection(AbstractCollection):
     def remove(self, criteria):
         criteria = Collection.prepareCriteria(criteria)
         return self.coll.remove(criteria)
+
+    def count(self, criteria=None):
+        criteria = Collection.prepareCriteria(criteria)
+        return self.coll.find(criteria).count()
 
 
 class Mongo(object):

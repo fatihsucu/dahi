@@ -37,8 +37,8 @@ class Document(object):
     def toJSON(self):
         return {
             "_id": str(self.id),
-            "botSay": self.botSay.toJson() if self.botSay else None,
-            "humanSay": self.humanSay.toJson if self.humanSay else None,
+            "botSay": self.botSay.toJSON() if self.botSay else None,
+            "humanSay": self.humanSay.toJSON() if self.humanSay else None,
             "onMatch": self.onMatch
         }
 

@@ -205,29 +205,29 @@ class TFIDFMatcher(AbstractMatcher):
             reverse=True)[:length]
 
 
-if __name__ == '__main__':
-    # example
-    from dahi.document import Document
-    from dahi.statement import Statement
-    from dahi.knowledgebase import KnowledgeBase
-    a = [Document(42, [Statement("elma armut elma elma")], None),
-         Document(71, [Statement("karpuz armut patates")], None),
-         Document(56, [Statement("elma uzum limon")], None)]
-
-    def getCount():
-        return 3
-
-    def getAll():
-        return a
-
-    kb = KnowledgeBase(3)
-    kb.getAll = getAll
-    kb.count = getCount
-    tt = TFIDFMatcher(kb)
-    tt.generate(kb)
-
-    print tt.table
-    print tt.getTfs("karp")
-    print tt.getIdf("karp")
-    print tt.getTfIdfScore("karp", docID=71)
-    pass
+# if __name__ == '__main__':
+#     # example
+#     from dahi.document import Document
+#     from dahi.statement import Statement
+#     from dahi.knowledgebase import KnowledgeBase
+#     a = [Document(42, [Statement("elma armut elma elma")], None),
+#          Document(71, [Statement("karpuz armut patates")], None),
+#          Document(56, [Statement("elma uzum limon")], None)]
+#
+#     def getCount():
+#         return 3
+#
+#     def getAll():
+#         return a
+#
+#     kb = KnowledgeBase(3)
+#     kb.getAll = getAll
+#     kb.count = getCount
+#     tt = TFIDFMatcher(kb)
+#     tt.generate(kb)
+#
+#     print tt.table
+#     print tt.getTfs("karp")
+#     print tt.getIdf("karp")
+#     print tt.getTfIdfScore("karp", docID=71)
+#     pass
