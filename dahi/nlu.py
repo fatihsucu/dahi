@@ -32,16 +32,13 @@ class NLU(object):
             return bestMatch
 
     def findAnswer(self, text, **kwargs):
-        print(text)
         matches = self.matcher.match(text)
 
-        print(matches)
 
         if not matches:
             raise MatchNotFound()
 
         bestMatch = self.findBestMatch(matches)
-        print(bestMatch)
         if not bestMatch:
             raise MatchNotFound()
 

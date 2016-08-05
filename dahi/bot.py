@@ -18,13 +18,10 @@ class Bot(object):
         try:
             docID, score = nlu.findAnswer(
                 statement.text, threshold=0.3, amount=4)
-            print(docID, score)
             doc = self.knowledgeBase.get(docID)
-            print(doc)
             if doc.botSay:
                 statement = doc.botSay
         except MatchNotFound as e:
-            print(e.message)
             # FIXME: this should not be literal, instead, knowledgeBase can be
             # used to get this.
             doc = Document(botSay=Statement("sorry, I did not get it."))
