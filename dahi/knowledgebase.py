@@ -15,7 +15,7 @@ class KnowledgeBase(object):
         return (Document.generate(i) for i in self.db.find())
 
     def get(self, docID):
-        data = self.db.findOne({"_id": ObjectId(docID)})
+        data = self.db.find_one({"_id": ObjectId(docID)})
         return Document.generate(data)
 
     def insert(self, doc):

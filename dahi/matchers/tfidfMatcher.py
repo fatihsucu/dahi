@@ -163,7 +163,7 @@ class TFIDFMatcher(AbstractMatcher):
         # filling the model with idf values for each term found in the model
         for term in model.getTerms():
             df = model.getDF(term)
-            idf = math.log(knowledgeBase.count() / float(1 + df))
+            idf = 1 + math.log(knowledgeBase.count() / float(1 + df))
             model.setIDF(term, idf)
 
         return model
