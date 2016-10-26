@@ -65,9 +65,9 @@ class Collection(AbstractCollection):
 
 
 class Mongo(object):
-    def __init__(self, mongoUri):
+    def __init__(self, mongoUri, dbName="dahi"):
         super(Mongo, self).__init__()
-        self.db = MongoClient(mongoUri)["dahi"]
+        self.db = MongoClient(mongoUri)[dbName]
 
     def __getitem__(self, item):
         return Collection(self.db[item])
