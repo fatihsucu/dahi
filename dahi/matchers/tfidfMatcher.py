@@ -163,13 +163,9 @@ class TFIDFMatcher(AbstractMatcher):
         # filling the model with idf values for each term found in the model
         for term in model.getTerms():
             df = model.getDF(term)
-<<<<<<< HEAD
-            idf = 1 + math.log(knowledgeBase.count() / float(1 + df))
-=======
             idf = math.log(knowledgeBase.count() / float(1 + df))
             if idf <= 0:
                 idf = 1
->>>>>>> e07a3aa97977afa2b9fc1b4cd005c70ea2a3a302
             model.setIDF(term, idf)
 
         return model
@@ -211,34 +207,6 @@ class TFIDFMatcher(AbstractMatcher):
             reverse=True)[:length]
 
 
-<<<<<<< HEAD
-# if __name__ == '__main__':
-#     # example
-#     from dahi.document import Document
-#     from dahi.statement import Statement
-#     from dahi.knowledgebase import KnowledgeBase
-#     a = [Document(42, [Statement("elma armut elma elma")], None),
-#          Document(71, [Statement("karpuz armut patates")], None),
-#          Document(56, [Statement("elma uzum limon")], None)]
-#
-#     def getCount():
-#         return 3
-#
-#     def getAll():
-#         return a
-#
-#     kb = KnowledgeBase(3)
-#     kb.getAll = getAll
-#     kb.count = getCount
-#     tt = TFIDFMatcher(kb)
-#     tt.generate(kb)
-#
-#     print tt.table
-#     print tt.getTfs("karp")
-#     print tt.getIdf("karp")
-#     print tt.getTfIdfScore("karp", docID=71)
-#     pass
-=======
 if __name__ == '__main__':
     # example
     from dahi.document import Document
@@ -264,4 +232,3 @@ if __name__ == '__main__':
     print(tt.getTfs("karp"))
     print(tt.getIdf("karp"))
     print(tt.getTfIdfScore("karp", docID=71))
->>>>>>> e07a3aa97977afa2b9fc1b4cd005c70ea2a3a302
