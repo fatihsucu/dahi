@@ -18,7 +18,7 @@ install_requires = [
 
 setup(
     name='bot-dahi',
-    version='0.1.14',
+    version='0.1.15',
     url='https://github.com/muatik/dahi',
     license=open('LICENSE').read(),
     author='Mustafa Atik',
