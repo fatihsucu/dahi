@@ -24,7 +24,11 @@ RUN mkdir -p /usr/src/app
 COPY requirements.txt /usr/src/app
 RUN pip install -r /usr/src/app/requirements.txt
 
-
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data wordnet
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data words
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data sample_grammars
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data maxent_treebank_pos_tagger
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data averaged_perception_tagger
 
 RUN mkdir -p /usr/src/app
 ADD build.sh /usr/src/app

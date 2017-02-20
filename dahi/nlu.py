@@ -33,8 +33,6 @@ class NLU(object):
 
     def findAnswer(self, text, **kwargs):
         matches = self.matcher.match(text)
-
-
         if not matches:
             raise MatchNotFound()
 
