@@ -6,17 +6,18 @@ from dahi.nlu import MatchNotFound
 from dahi.statement import Statement
 from dahi.storages import Mongo
 
-storage = Mongo("mongodb://192.168.2.209/dahi")
+storage = Mongo("mongodb://172.25.1.77/dahi")
 contextId = "57960e326bb20030900eb6d4"
 bot1Id = "57e9095c102ee808b06f0ae1"
 bot2Id = "57e9095c102ee808b06f0ae2"
+storage.db.drop_collection("bots")
 
 try:
     context = contexts.Builder(storage).get(contextId)
 except ContextNotFoundError:
     context = contexts.Builder(storage).create(meta={})
 
-bot = bots.Builder(storage).create(meta={})
+bot = bots.Builder(storage).create(botId=bot1Id, meta={})
 bot.knowledgeBase.truncate()
 
 bot.learn(Document(
@@ -57,4 +58,5 @@ except MatchNotFound:
 
 KnowledgeBase(storage, bot1Id).remove(docID="57ee51816bb2003008fcd4c2")
 for doc in KnowledgeBase(storage, bot1Id).getAll():
-    print(doc)
+    print(doc.humanSay)
+    print(doc.botSay)
