@@ -15,9 +15,11 @@ class Bot(object):
 
         context.humanSays(statement)
 
+        count = self.knowledgeBase.count()
+        threshold = 0.2 + 0.0002 * float(count)
         # try:
         docID, score = nlu.findAnswer(
-            statement.text, threshold=0.3, amount=4)
+            statement.text, threshold=threshold, amount=4)
         doc = self.knowledgeBase.get(docID)
         if doc.botSay:
             statement = doc.botSay

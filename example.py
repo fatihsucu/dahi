@@ -9,7 +9,7 @@ from dahi.storages import Mongo
 
 storage = Mongo("mongodb://localhost")
 
-kb = KnowledgeBase(storage)
+kb = KnowledgeBase(storage, 1)
 kb.truncate()
 
 kb.insert(Document(

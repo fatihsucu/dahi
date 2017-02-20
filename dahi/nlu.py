@@ -1,22 +1,22 @@
 
 
 class MatchNotFound(Exception):
-    def __init__(self, msg="no answer matched", code=400):
-        super(MatchNotFound, self).__init__(msg)
-        self.msg = msg
+    def __init__(self, message="no answer matched", code=400):
+        super(MatchNotFound, self).__init__(message)
+        self.message = message
         self.code = code
 
     def __json__(self):
         return {
             "type": self.__class__.__name__,
-            "message": self.msg,
+            "message": self.message,
             "code": self.code}
 
     def __str__(self):
         return "{}: code: {}, message: {}".format(
             self.__class__.__name__,
             self.code,
-            self.msg)
+            self.message)
 
 
 class NLU(object):
@@ -33,6 +33,7 @@ class NLU(object):
 
     def findAnswer(self, text, **kwargs):
         matches = self.matcher.match(text)
+
 
         if not matches:
             raise MatchNotFound()

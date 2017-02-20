@@ -132,7 +132,7 @@ function fillQAList() {
     r.docs.forEach(function(a){
       $qaList.append(Mustache.render(template, {
         "answer": a.onMatch,
-        "question": a.statement.text
+        "question": a.statement
       }))
     })
 
