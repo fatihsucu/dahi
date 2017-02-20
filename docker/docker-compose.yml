@@ -1,0 +1,49 @@
+version: '2'
+services:
+
+  workspace:
+    build:
+      context: ./workspace
+      dockerfile: Dockerfile
+    ports:
+     - "80:80"
+     - "443:443"
+     - "5000:5000"
+    volumes:
+      - ../../:/dahi
+    networks:
+      internal:
+        ipv4_address: 172.25.1.75
+    depends_on:
+      - mongo
+      - redis
+    stdin_open: true
+
+  redis:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    ports:
+     - "6379:6379"
+    networks:
+      internal:
+        ipv4_address: 172.25.1.76
+
+  mongo:
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
+    ports:
+     - "27017:27017"
+    networks:
+      internal:
+        ipv4_address: 172.25.1.77
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.1.0/24
+
+
