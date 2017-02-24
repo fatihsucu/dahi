@@ -28,14 +28,14 @@ class TFIDFMatcher(AbstractMatcher):
         for doc in knowledgeBase.getAll():
             if not doc.entities:
                 continue
-            statement = doc.entities
-            terms = tokenize(statement)
-            n = len(terms)
-            for term in terms:
-                tf = model.getTF(docId=doc.id, term=term)
+            entities = doc.entities
+
+            n = len(entities)
+            for entity in entities:
+                tf = model.getTF(docId=doc.id, term=entity["lemma"])
                 tf = float(tf * n + 1) / n
                 model.setTF(
-                    docId=doc.id, term=term, frequency=tf)
+                    docId=doc.id, term=entity["lemma"], tag=entity["tag"][0].lower(), frequency=tf)
 
         # filling the model with idf values for each term found in the model
         for term in model.getTerms():
@@ -83,9 +83,12 @@ class TFIDFMatcher(AbstractMatcher):
             key=operator.itemgetter(1),
             reverse=True)[:length]
 
-    def defineSynonyms(self, term, synonyms):
-        self.model.setSynonimsOfTerm(term, synonyms)
-
     def refresh(self):
         self.model = self.generateModel(self.knowledgeBase)
+
+    def getSynonyms(self):
+        return self.model.synonyms.keys()
+
+    def getMainTermOf(self, term):
+        return self.model.synonyms[term]
 

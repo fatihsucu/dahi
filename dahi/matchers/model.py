@@ -1,6 +1,6 @@
 from copy import deepcopy
-from nltk.corpus import wordnet as wn
-from dahi.synonym_extractor import EnglishSynoymer
+
+from dahi.en.synonym_extractor import EnglishSynoymer
 
 
 class Model(object):
@@ -37,7 +37,7 @@ class Model(object):
         """
         return self.data.get(term, deepcopy(Model.TERM_ENTRY))
 
-    def setTF(self, docId, term, frequency):
+    def setTF(self, docId, term, tag, frequency):
         """
         sets the term-frequency value of the given document.
 
@@ -46,7 +46,7 @@ class Model(object):
         :param frequency: frequency as an integer value
         :return:
         """
-        self.setSynonimsOfTerm(term)
+        self.setSynonimsOfTerm(term, tag)
         entry = self.getEntry(term)
         entry["tf"][docId] = frequency
         self.data[term] = entry
@@ -59,7 +59,6 @@ class Model(object):
         :param frequency: integer
         :return:
         """
-        self.setSynonimsOfTerm(term)
         entry = self.getEntry(term)
         entry["idf"] = frequency
         self.data[term] = entry
@@ -146,13 +145,13 @@ class Model(object):
             return self.synonyms[synonym]
         return synonym
 
-    def setSynonimsOfTerm(self, term):
+    def setSynonimsOfTerm(self, term, tag):
         """
         Set synonyms of main terms helps match with synonyms
         :param term: Main word
         :param synonyms: List of synonyms of term
         """
-        synonyms = self.synonymExtractor.findSynonyms(term)
+        synonyms = self.synonymExtractor.findSynonyms(term, tag)
         for synonym in synonyms:
             if synonym not in self.synonyms.values():
                 self.synonyms[synonym.replace("_", " ")] = term

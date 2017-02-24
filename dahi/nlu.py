@@ -1,3 +1,10 @@
+class DefaultLanguage(object):
+
+    def __init__(self):
+        pass
+
+    def analyze(self, text):
+        return text
 
 
 class MatchNotFound(Exception):
@@ -21,33 +28,34 @@ class MatchNotFound(Exception):
 
 class NLU(object):
 
-    def __init__(self, matcher, knowledgebase, postagger=None, lemmatizer=None):
+    def __init__(self, matcher, knowledgebase, lang='en'):
         super(NLU, self).__init__()
         self.knowledgebase = knowledgebase
         self.matcher = matcher
-        self.postagger = postagger
-        self.lemmatizer = lemmatizer
+        self.source = __import__('dahi')
+        try:
+            self.language = self.source.__getattribute__(lang)
+        except Exception as e:
+            self.language = DefaultLanguage()
 
     def findBestMatch(self, matches):
-        print(matches)
         bestMatch = matches[0]
         score = bestMatch[1]
         if score > 0.5:
             return bestMatch
 
+    def findTermFromSynonym(self, text):
+        synonyms = self.matcher.getSynonyms()
+        for key in text.split(" "):
+            if key in synonyms:
+                text = text.replace(key, self.matcher.getMainTermOf(key))
+        return text
+
     def findAnswer(self, text, **kwargs):
         text = text.lower()
-        for key in self.matcher.model.synonyms.keys():
-            if key in text:
-                text = text.replace(key, self.matcher.model.synonyms[key])
-        print(text)
-        if self.postagger:
-            entities = self.postagger.getSpesificWordsWithTags(text)
-        if self.lemmatizer:
-            text = self.lemmatizer.lemmatizeViaTag(entities)
-            print("                                  ")
-            print("                                  ")
-        matches = self.matcher.match(text)
+        text = self.findTermFromSynonym(text)
+        lemma_list = self.language.analyze(text)
+        matches = self.matcher.match(" ".join([t["lemma"] for t in lemma_list]))
         if not matches:
             raise MatchNotFound()
 
@@ -62,15 +70,9 @@ class NLU(object):
     def insertKnowledbase(self, doc):
         text = doc.humanSay.text
         text = text.lower()
-        if self.postagger:
-            entities = self.postagger.getSpesificWordsWithTags(text)
-        if self.lemmatizer:
-            result = self.lemmatizer.lemmatizeViaTag(entities)
-        doc.setEntities(result)
+        lemma_list = self.language.analyze(text)
+        doc.setEntities(lemma_list)
         self.knowledgebase.insert(doc)
-
-
-
 
 
 def tokenize(text):

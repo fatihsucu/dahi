@@ -1,16 +1,15 @@
-from dahi.document import Document
+from dahi.en.lemmatizer import EnglishLemmatizer
+from dahi.en.postagger import EnglishPosTagger
 from dahi.matchers.tfidfMatcher import TFIDFMatcher
-from dahi.nlu import NLU, MatchNotFound
-from dahi.statement import Statement
-from dahi.postagger import EnglishPosTagger
-from dahi.lemmatizer import EnglishLemmatizer
+from dahi.nlu import NLU
+
 
 class Bot(object):
 
     def __init__(self, knowledgeBase):
         self.knowledgeBase = knowledgeBase
         self.matcher = TFIDFMatcher(knowledgeBase)
-        self.nlu = NLU(self.matcher, self.knowledgeBase, EnglishPosTagger(), EnglishLemmatizer())
+        self.nlu = NLU(self.matcher, self.knowledgeBase)
         
     def respond(self, statement):
         count = self.knowledgeBase.count()

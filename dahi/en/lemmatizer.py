@@ -41,22 +41,15 @@ class EnglishLemmatizer(object):
             return self.lemmatizer.lemmatize(word, tag)
         return self.lemmatizer.lemmatize(word)
 
-    def lemmatizeSentence(self, sentence):
-        result = [" " for item in tokenized]
-        tokenized = word_tokenize(sentence)
-        for i, word in enumarate(tokenized):
-            result[i] = self.lemmatize(word)
-        return " ".join(result)
-    
     def lemmatizeViaTag(self, sentence_dictionary):
         """
         Sentence Dictionary should be:
         key: word
         value: tag
         """
-        result = ""
+        result = []
         for word, tag in sentence_dictionary.items():
             lemma = self.lemmatize(word, penn_to_wordnet(tag))
-            result += "{} ".format(lemma)
+            result.append({"lemma" : lemma, "tag": tag})
         return result
 
