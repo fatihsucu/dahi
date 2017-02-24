@@ -1,5 +1,6 @@
 from bson import ObjectId
 from dahi.statement import Statement
+import nltk
 
 
 class InvalidDocument(Exception):
@@ -7,10 +8,11 @@ class InvalidDocument(Exception):
 
 
 class Document(object):
-    def __init__(self, docID=None, botSay=None, humanSay=None, onMatch=None):
+    def __init__(self, docID=None, botSay=None, humanSay=None, onMatch=None, entities=""):
         super(Document, self).__init__()
         self.botSay = botSay
         self.humanSay = humanSay
+        self.entities = entities
         self.id = docID
         self.onMatch = onMatch
 
@@ -24,12 +26,17 @@ class Document(object):
 
         if data.get("humanSay", None):
             humanSay = Statement.generate(data["humanSay"])
-
+        
         return Document(
             docID=str(data["_id"]),
             botSay=botSay,
             humanSay=humanSay,
-            onMatch=data["onMatch"])
+            onMatch=data["onMatch"],
+            entities=data["entities"]
+            )
+
+    def setEntities(self, entities):
+        self.entities = entities
 
     def __repr__(self):
         return "Document <{}>".format(self.id)
@@ -39,7 +46,8 @@ class Document(object):
             "_id": str(self.id),
             "botSay": self.botSay.toJson() if self.botSay else None,
             "humanSay": self.humanSay.toJson() if self.humanSay else None,
-            "onMatch": self.onMatch
+            "onMatch": self.onMatch,
+            "entities": self.entities
         }
 
     def toDB(self):
@@ -47,5 +55,6 @@ class Document(object):
             "_id": ObjectId(self.id),  # FIXME: I don't like ObjectId() here
             "botSay": self.botSay.toDB() if self.botSay else None,
             "humanSay": self.humanSay.toDB() if self.humanSay else None,
+            "entities": self.entities,
             "onMatch": self.onMatch
         }

@@ -3,80 +3,84 @@ from dahi.bot import Bot
 from dahi.context import Context
 from dahi.document import Document
 from dahi.documents import Documents
+from dahi.storages import Mongo
 from dahi.knowledgebase import KnowledgeBase
 from dahi.statement import Statement
-from flask import Flask, Blueprint, request, jsonify, send_from_directory
+from flask import Flask, Blueprint, request, jsonify, send_from_directory, render_template
+from flask import request, abort
+import functools
 from pymongo import MongoClient
 
-# TODO: a config file required for flask app
-api = Blueprint("api", __name__, url_prefix="/api/v1")
-ui = Blueprint("ui", __name__, static_folder="static/")
-
-# TODO: move the db initialization into a separate module
-db = MongoClient("mongodb://192.168.2.209")["dahi"]
-docs = Documents(db["docs"])
-kb = KnowledgeBase(db, 1)
-botId = 12
+app = Flask(__name__)
 
 
-@ui.route('/index')
-def send_index():
-    return ui.send_static_file("index.html")
+def jsonize_request():
+    if request.method != 'GET':
+        datatype = request.headers.get("Content-Type", None)
+        print(request.json)
+        if not datatype:
+            abort(404)
+        elif "application/x-www-form-urlencoded" in datatype:
+            data = dict(request.form)
+            for each in data.keys():
+                data[each] = data[each][0]
+        elif "application/json" in datatype:
+            data = dict(request.json)
+        else:
+            return {}
+        return data
+    else:
+        data = dict(request.args.items())
+        return data
 
 
-@ui.route('/css/<path:path>')
-def send_css(path):
-    return send_from_directory('static/css', path)
+def jsonizeRequest(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwds):
+        data = jsonize_request()
+        kwds['data'] = data
+        return f(*args, **kwds)
+
+    return wrapper
+
+storage = Mongo("mongodb://172.25.1.77/dahi")
+#context = contexts.Builder(storage).create(meta={})
+accountid = "58ac69c6eb29aa3a897b97ac"
+result = []
+kb = KnowledgeBase(storage, accountid)
+
+@app.route("/")
+def index():
+    question = request.args.get("questionText", None)
+    answer = request.args.get("answerText", None)
+    if question and answer:
+        bot = Bot(kb)
+        bot.learn(Document(
+            humanSay=Statement(question),
+            botSay=Statement(answer)
+            )
+        )
+    qas = kb.getAll()
+    response = [qa.toJson() for qa in qas]
+    return render_template('index.html', qas=response)
 
 
-@ui.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('js', path)
-
-
-@api.route("/docs/")
-def getDocs():
-    kb = KnowledgeBase(db, 1)
-    d = Bot(kb).knowledgeBase.getAll()
-    # TODO: improve this jsonify operation, make it less verbose
-    a = [i.toJson() for i in d]
-    return jsonify({"docs": a})
-
-
-@api.route("/docs/", methods=["POST"])
-def insertDoc():
-    question = request.form["question"]
-    answer = request.form["answer"]
-    onMatch = answer
-    doc = Document(ObjectId(), humanSay=Statement(question), botSay=Statement(answer), onMatch=onMatch)
-    bot = Bot(kb)
-    bot.learn(doc)
-
-    # TODO: every response must be in a standard format. restfulApi doc needed.
-    return jsonify(doc.toJson())
-
-
-@api.route("/answer")
-def getAnswer():
-    queryStatement = Statement(request.args["q"])
-
-    userId = 3
-    bot = Bot(kb)
-
-    context = Context(123)
-    responseStatement = bot.respond(context, queryStatement)
-
-    context.insert(queryStatement)
-    context.insert(responseStatement)
-    return jsonify(responseStatement.toJson())
+@app.route("/test", methods=["GET"])
+def learn():
+    try:
+        question = request.args.get("questionText", None)
+        if question:
+            bot = Bot(kb)
+            answer = bot.respond(Statement(question))
+            answer =  answer.botSay.text
+            result.append({"asked": question, "answer": answer})
+    except:
+        pass
+    return render_template('test.html', qas=result)
 
 
 def run():
-    app = Flask(__name__)
-    app.register_blueprint(api)
-    app.register_blueprint(ui)
-    app.debug = True
-    app.run()
+    app.run("0.0.0.0")
 
 if __name__ == "__main__":
     run()

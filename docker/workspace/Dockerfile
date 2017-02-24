@@ -29,6 +29,7 @@ RUN python -m nltk.downloader -d /usr/local/share/nltk_data words
 RUN python -m nltk.downloader -d /usr/local/share/nltk_data sample_grammars
 RUN python -m nltk.downloader -d /usr/local/share/nltk_data maxent_treebank_pos_tagger
 RUN python -m nltk.downloader -d /usr/local/share/nltk_data averaged_perceptron_tagger
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data punkt
 
 RUN mkdir -p /usr/src/app
 ADD build.sh /usr/src/app

@@ -1,3 +1,8 @@
+from copy import deepcopy
+from nltk.corpus import wordnet as wn
+from dahi.synonym_extractor import EnglishSynoymer
+
+
 class Model(object):
     """
     Term-frequency and inverse-document-frequency data model. This facilitates
@@ -14,7 +19,11 @@ class Model(object):
 
     def __init__(self):
         super(Model, self).__init__()
+        self.synonymExtractor = EnglishSynoymer()
         self.data = {}
+        # Synonyms key:value 
+        # Value is main word
+        self.synonyms = {}
 
     def empty(self):
         self.data = {}
@@ -37,6 +46,7 @@ class Model(object):
         :param frequency: frequency as an integer value
         :return:
         """
+        self.setSynonimsOfTerm(term)
         entry = self.getEntry(term)
         entry["tf"][docId] = frequency
         self.data[term] = entry
@@ -49,6 +59,7 @@ class Model(object):
         :param frequency: integer
         :return:
         """
+        self.setSynonimsOfTerm(term)
         entry = self.getEntry(term)
         entry["idf"] = frequency
         self.data[term] = entry
@@ -65,6 +76,7 @@ class Model(object):
         :return: frequency as an integer value
         """
         # @TODO: test with not available docId and term
+        term = self.getMainTermFromSynonym(term)
         entry = self.getEntry(term)
         return entry["tf"].get(docId, 0)
 
@@ -77,6 +89,7 @@ class Model(object):
         :param term: term as a string
         :return: integer
         """
+        term = self.getMainTermFromSynonym(term)
         entry = self.getEntry(term)
         return entry["idf"]
 
@@ -90,6 +103,7 @@ class Model(object):
         :param term:
         :return: document frequency as an integer value
         """
+        term = self.getMainTermFromSynonym(term)
         return len(self.data[term]["tf"])
 
     def getTerms(self):
@@ -107,6 +121,7 @@ class Model(object):
         :param term: term as a string
         :return: document ids list
         """
+        term = self.getMainTermFromSynonym(term)
         entry = self.getEntry(term)
         return entry["tf"].keys()
 
@@ -121,3 +136,23 @@ class Model(object):
         tf = self.getTF(docId, term)
         idf = self.getIDF(term)
         return tf * idf
+
+    def getMainTermFromSynonym(self, synonym):
+        """
+        Gets main term with related to synonym
+        :param synonym: Synonym of main word
+        """
+        if synonym in self.synonyms:
+            return self.synonyms[synonym]
+        return synonym
+
+    def setSynonimsOfTerm(self, term):
+        """
+        Set synonyms of main terms helps match with synonyms
+        :param term: Main word
+        :param synonyms: List of synonyms of term
+        """
+        synonyms = self.synonymExtractor.findSynonyms(term)
+        for synonym in synonyms:
+            if synonym not in self.synonyms.values():
+                self.synonyms[synonym.replace("_", " ")] = term

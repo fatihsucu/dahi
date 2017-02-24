@@ -12,6 +12,7 @@ class TFIDFMatcher(AbstractMatcher):
 
     def __init__(self, knowledgeBase):
         super(TFIDFMatcher, self).__init__()
+        self.knowledgeBase = knowledgeBase
         self.model = self.generateModel(knowledgeBase)
 
     @classmethod
@@ -25,10 +26,10 @@ class TFIDFMatcher(AbstractMatcher):
         model = Model()
         # filling the table with tf values for each term found in docs
         for doc in knowledgeBase.getAll():
-            if not doc.humanSay:
+            if not doc.entities:
                 continue
-            statement = doc.humanSay
-            terms = tokenize(statement.text)
+            statement = doc.entities
+            terms = tokenize(statement)
             n = len(terms)
             for term in terms:
                 tf = model.getTF(docId=doc.id, term=term)
@@ -81,4 +82,10 @@ class TFIDFMatcher(AbstractMatcher):
             docScores.items(),
             key=operator.itemgetter(1),
             reverse=True)[:length]
+
+    def defineSynonyms(self, term, synonyms):
+        self.model.setSynonimsOfTerm(term, synonyms)
+
+    def refresh(self):
+        self.model = self.generateModel(self.knowledgeBase)
 

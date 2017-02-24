@@ -21,17 +21,32 @@ class MatchNotFound(Exception):
 
 class NLU(object):
 
-    def __init__(self, matcher):
+    def __init__(self, matcher, knowledgebase, postagger=None, lemmatizer=None):
         super(NLU, self).__init__()
+        self.knowledgebase = knowledgebase
         self.matcher = matcher
+        self.postagger = postagger
+        self.lemmatizer = lemmatizer
 
     def findBestMatch(self, matches):
+        print(matches)
         bestMatch = matches[0]
         score = bestMatch[1]
-        if score > 0.2:
+        if score > 0.5:
             return bestMatch
 
     def findAnswer(self, text, **kwargs):
+        text = text.lower()
+        for key in self.matcher.model.synonyms.keys():
+            if key in text:
+                text = text.replace(key, self.matcher.model.synonyms[key])
+        print(text)
+        if self.postagger:
+            entities = self.postagger.getSpesificWordsWithTags(text)
+        if self.lemmatizer:
+            text = self.lemmatizer.lemmatizeViaTag(entities)
+            print("                                  ")
+            print("                                  ")
         matches = self.matcher.match(text)
         if not matches:
             raise MatchNotFound()
@@ -44,9 +59,22 @@ class NLU(object):
         score = bestMatch[1]
         return docID, score
 
+    def insertKnowledbase(self, doc):
+        text = doc.humanSay.text
+        text = text.lower()
+        if self.postagger:
+            entities = self.postagger.getSpesificWordsWithTags(text)
+        if self.lemmatizer:
+            result = self.lemmatizer.lemmatizeViaTag(entities)
+        doc.setEntities(result)
+        self.knowledgebase.insert(doc)
+
+
+
+
 
 def tokenize(text):
-    return [t[:4] for t in text.split(" ")]
+    return [t for t in text.split(" ")]
 
 #
 # def tf(term, document):
