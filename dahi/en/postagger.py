@@ -5,10 +5,10 @@ import nltk
 
 class EnglishPosTagger(object):
     """docstring for PosTagger"""
+
     def __init__(self):
         super(EnglishPosTagger, self).__init__()
         self.posTagger = nltk
-        
 
     def tag(self, tokinezed_sentence):
         tagged_sentence = self.posTagger.pos_tag(tokinezed_sentence)
@@ -19,6 +19,8 @@ class EnglishPosTagger(object):
         for word, tag in tagged_sentence:
             if tag.startswith("N"):
                 filtered += "{} ".format(word)
+            if tag.startswith("J"):
+                filtered += "{} ".format(word)
             if tag.startswith("V") and tag != "VBZ" and tag != "VBP":
                 filtered += "{} ".format(word)
         return filtered
@@ -28,6 +30,8 @@ class EnglishPosTagger(object):
         for word, tag in tagged_sentence:
             if tag.startswith("N"):
                 filtered.append((word, tag))
+            if tag.startswith("J"):
+                filtered.append((word, "a"))
             if tag.startswith("V") and tag != "VBZ" and tag != "VBP":
                 filtered.append((word, tag))
         return filtered
@@ -40,12 +44,8 @@ class EnglishPosTagger(object):
     def getSpesificWordsWithTags(self, sentence):
         tokinezed = word_tokenize(sentence)
         tagged = self.tag(tokinezed)
+        print(tagged)
         result = {}
         for word, tag in self.filterTagsViaValues(tagged):
             result[word] = tag
         return result
-
-
-
-
-

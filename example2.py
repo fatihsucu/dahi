@@ -67,6 +67,10 @@ questionAnswers = [
     {
         "question": "Kredi karti basvurusu nasil yapilir?",
         "answer": "Kredi karti basvusuru icin asagidaki adimlari izleyebilirsiniz."
+    },
+    {
+        "question": "are you human",
+        "answer": "Yes i am human"
     }
 ]
 
