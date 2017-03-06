@@ -63,6 +63,10 @@ questionAnswers = [
     {
         "question": "I want to delete my chats",
         "answer": "Deleting chats is a premium feature and you can do so by clicking the menu icon on top right side of the chat screen."
+    },
+    {
+        "question": "Kredi karti basvurusu nasil yapilir?",
+        "answer": "Kredi karti basvusuru icin asagidaki adimlari izleyebilirsiniz."
     }
 ]
 

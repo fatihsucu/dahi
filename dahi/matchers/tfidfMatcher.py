@@ -30,6 +30,11 @@ class TFIDFMatcher(AbstractMatcher):
                 continue
             entities = doc.entities
 
+            if not entities:
+                entities = []
+                for i in doc.humanSay.text.split(" "):
+                    entities.append({"lemma": i, "tag": "NN"})
+
             n = len(entities)
             for entity in entities:
                 tf = model.getTF(docId=doc.id, term=entity["lemma"])
